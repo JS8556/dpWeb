@@ -1,0 +1,55 @@
+<div class="container color-dark">
+  <div class="col">
+    <p>Find user by ID</p>
+  </div>
+  <div class="col">
+    <p>Users orders</p>
+  </div>
+</div>
+<div class="container color-light" [@orders]="ordersNGraph.length">
+  <div class="col">
+    <p class="sm"></p>
+
+    <form>
+      <input type="number" class="txt" name="item" placeholder="ID" [(ngModel)]="userId">
+      <input type="submit" class="btn" value="Submit" (click)="findUser()">
+    </form>
+  </div>
+  <div class="col">
+    <p class="life-container" *ngFor="let order of ordersNGraph; let i = index" (click)="addItemY(i)">
+      {{ order.name }}
+    </p>
+  </div>
+</div>
+
+
+<div class="container color-dark">
+  <div class="col">
+    <p>User details</p>
+  </div>
+  <div class="col">
+    <p>Orders in graph</p>
+  </div>
+</div>
+<div class="container color-light" [@orders]="ordersYGraph.length">
+  <div class="col">
+    <div class="container color-light">
+      <div class="col">
+        <p class="sm">Firstname:</p>
+        <p class="name">{{user.firstname}}</p>
+      </div>
+      <div class="col">
+        <p class="sm">Surname:</p>
+        <p class="name">{{user.surname}}</p> 
+      </div>
+    </div>
+
+  </div>
+  <div class="col">
+    <p class="life-container" *ngFor="let order of ordersYGraph; let i = index" (click)="removeItemY(i)">
+      {{ order.name }}
+    </p>
+  </div>
+</div>
+
+<div id="container"></div>
