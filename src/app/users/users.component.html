@@ -8,8 +8,6 @@
 </div>
 <div class="container color-light" [@orders]="ordersNGraph.length">
   <div class="col">
-    <p class="sm"></p>
-
     <form>
       <input type="number" class="txt" name="item" placeholder="ID" [(ngModel)]="userId">
       <input type="submit" class="btn" value="Submit" (click)="findUser()">

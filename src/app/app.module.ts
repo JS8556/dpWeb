@@ -5,7 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import { UsersComponent } from './users/users.component';
-import { OrdersComponent } from './orders/orders.component';
 
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,7 +14,6 @@ import { ChartModule } from 'angular-highcharts';
   declarations: [
     AppComponent,
     UsersComponent,
-    OrdersComponent
   ],
   imports: [
     BrowserModule,
