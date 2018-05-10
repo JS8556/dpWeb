@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { WebDataService } from '../web-data.service';
 
 import { trigger,style,transition,animate,keyframes,query,stagger } from '@angular/animations';
 import { Chart } from 'angular-highcharts';
@@ -9,30 +10,26 @@ import * as xRange from 'highcharts/modules/xrange.js';
   selector: 'app-users',
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss'],
-  animations: [
-    
-        trigger('orders', [
-          transition('* => *', [
-    
-            query(':enter', style({ opacity: 0 }), {optional: true}),
-    
-            query(':enter', stagger('300ms', [
-              animate('.4s ease-in', keyframes([
-                style({opacity: 0, transform: 'translateX(-75%)', offset: 0}),
-                style({opacity: .5, transform: 'translateX(35px)',  offset: 0.3}),
-                style({opacity: 1, transform: 'translateX(0)',     offset: 1.0}),
-              ]))]), {optional: true})
-              ,
-            query(':leave', stagger('300ms', [
-              animate('.4s ease-out', keyframes([
-                style({opacity: 1, transform: 'translateX(0)', offset: 0}),
-                style({opacity: .5, transform: 'translateX(35px)',  offset: 0.3}),
-                style({opacity: 0, transform: 'translateX(-75%)',     offset: 1.0}),
-              ]))]), {optional: true})
-          ])
-        ])
-    
-      ]
+  animations: [  
+    trigger('orders', [
+      transition('* => *', [
+        query(':enter', style({ opacity: 0 }), {optional: true}),
+        query(':enter', stagger('300ms', [
+          animate('.4s ease-in', keyframes([
+            style({opacity: 0, transform: 'translateX(-75%)', offset: 0}),
+            style({opacity: .5, transform: 'translateX(35px)',  offset: 0.3}),
+            style({opacity: 1, transform: 'translateX(0)',     offset: 1.0}),
+          ]))]), {optional: true})
+          ,
+        query(':leave', stagger('300ms', [
+          animate('.4s ease-out', keyframes([
+            style({opacity: 1, transform: 'translateX(0)', offset: 0}),
+            style({opacity: .5, transform: 'translateX(35px)',  offset: 0.3}),
+            style({opacity: 0, transform: 'translateX(-75%)',     offset: 1.0}),
+          ]))]), {optional: true})
+      ])
+    ])
+  ]
 })
 export class UsersComponent implements OnInit {
 
@@ -44,7 +41,7 @@ export class UsersComponent implements OnInit {
   categories: any[];
   chart: any;
   
-  constructor() {
+  constructor(private WDService: WebDataService) {
     
     this.ordersNGraph = [];
     this.ordersYGraph = [];
@@ -88,9 +85,12 @@ export class UsersComponent implements OnInit {
 
 
   findUser() {
-    this.user = JSON.parse('{"id": 1234,"firstname": "Karel","surname": "Hluchý","orders": [{"id": 123456789,"name": "Zakázka 1","customer": "Parametr2Parametr2Parametr2","description": "Parametr3Parametr3Parametr3Parametr3Parametr3Parametr3Parametr3Parametr3Parametr3Parametr3Parametr3Parametr3Parametr3Parametr3Parametr3","finished": 0,"timeS": ["2017-06-29 17:55:04","2017-06-29 17:56:14"],"timeE": ["2017-06-29 17:56:04","2017-06-29 17:56:30"]},{"id": 987654321,"name": "Zakázka 2","customer": "Parametr20Parametr20Parametr20","description": "Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30","finished": 0,"timeS": ["2017-06-29 17:54:04","2017-06-29 17:55:14"],"timeE": ["2017-06-29 17:55:04","2017-06-29 17:55:44"]},{"id": 987654321,"name": "Zakázka 3","customer": "Parametr20Parametr20Parametr20","description": "Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30Parametr30","finished": 0,"timeS": ["2017-06-29 17:53:04","2017-06-29 17:55:00"],"timeE": ["2017-06-29 17:54:30","2017-06-29 17:56:15"]}]}');
-    this.ordersNGraph = this.user.orders;
-    console.log(this.ordersNGraph);
+    this.WDService.getUser(this.userId).then((res) => {
+      this.user = res;
+      this.filterOrders();
+      this.ordersNGraph = this.user.orders;
+      console.log(this.ordersNGraph);
+    });
   }
 
   addItemY(i:number){
@@ -144,8 +144,8 @@ export class UsersComponent implements OnInit {
       for (var index = 0; index < this.ordersYGraph[j].timeE.length; index++) {
         this.data.push(
           {
-            x: new Date(this.ordersYGraph[j].timeS[index]).getTime(),
-            x2: new Date(this.ordersYGraph[j].timeE[index]).getTime(),
+            x: new Date(this.ordersYGraph[j].timeS[index]).getTime() + 60*60*1000*2,
+            x2: new Date(this.ordersYGraph[j].timeE[index]).getTime() + 60*60*1000*2,
             y: j,
             partialFill: 1
           }
@@ -154,8 +154,8 @@ export class UsersComponent implements OnInit {
       if(this.ordersYGraph[j].timeE.length < this.ordersYGraph[j].timeS.length){
         this.data.push(
           {
-            x: new Date(this.ordersYGraph[j].timeS[index]).getTime(),
-            x2: new Date().getTime(),
+            x: new Date(this.ordersYGraph[j].timeS[index]).getTime() + 60*60*1000*2,
+            x2: new Date().getTime() + 60*60*1000*2,
             y: j,
             partialFill: 1
           }
@@ -164,6 +164,12 @@ export class UsersComponent implements OnInit {
       this.categories.push(this.ordersYGraph[j].name);
     }
     
+  }
+
+  filterOrders(){
+    if(this.user.orders.length > 0 && this.user.orders[0].hasOwnProperty('displayed')){
+      this.user.orders = this.user.orders.filter(order => order.displayed == 1);
+    }
   }
 
 }

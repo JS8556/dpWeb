@@ -10,6 +10,9 @@ import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChartModule } from 'angular-highcharts';
 
+import { WebDataService } from './web-data.service';
+import { HttpClientModule } from '@angular/common/http';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -20,9 +23,10 @@ import { ChartModule } from 'angular-highcharts';
     AppRoutingModule,
     FormsModule,
     BrowserAnimationsModule,
-    ChartModule
+    ChartModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [WebDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
