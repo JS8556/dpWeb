@@ -89,6 +89,7 @@ export class UsersComponent implements OnInit {
       this.user = res;
       this.filterOrders();
       this.ordersNGraph = this.user.orders;
+      this.ordersYGraph = [];
       console.log(this.ordersNGraph);
     });
   }
